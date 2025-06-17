@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import {
   AddIcon,
   CloudSunIcon,
@@ -6,9 +8,17 @@ import {
   TrashIcon,
 } from "../assets/icons"
 import Button from "./Button"
+import TASKS from "./constants/tasks"
+import TaskItem from "./TaskItem"
 import TaskSeparator from "./TaskSeparator"
 
-function Tasks() {
+const Tasks = () => {
+  const [tasks] = useState(TASKS)
+
+  const morningTasks = tasks.filter((task) => task.time === "morning")
+  const afternoonTasks = tasks.filter((task) => task.time === "afternoon")
+  const nightTasks = tasks.filter((task) => task.time === "night")
+
   return (
     <div className="w-full px-8 py-16">
       <div className="flex justify-between">
@@ -34,14 +44,23 @@ function Tasks() {
       <div className="rounded-xl bg-white p-6">
         <div className="space-y-3">
           <TaskSeparator title="Manhã" icon={<SunIcon />} />
+          {morningTasks.map((task) => (
+            <TaskItem key={task.id} task={task} />
+          ))}
         </div>
 
         <div className="my-6 space-y-3">
           <TaskSeparator title="Tarde" icon={<CloudSunIcon />} />
+          {afternoonTasks.map((task) => (
+            <TaskItem key={task.id} task={task} />
+          ))}
         </div>
 
         <div className="space-y-3">
           <TaskSeparator title="Noite" icon={<MoonIcon />} />
+          {nightTasks.map((task) => (
+            <TaskItem key={task.id} task={task} />
+          ))}
         </div>
       </div>
     </div>
