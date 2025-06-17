@@ -1,7 +1,13 @@
-import Tasks from "./_components/Tasks";
+import Sidebar from "./_components/Sidebar"
+import Tasks from "./_components/Tasks"
 
 function App() {
-  return <Tasks />;
+  return (
+    <div className="flex">
+      <Sidebar />
+      <Tasks />
+    </div>
+  )
 }
 
-export default App;
+export default App
