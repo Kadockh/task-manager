@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { toast } from "sonner"
 
 import {
   AddIcon,
@@ -14,7 +15,6 @@ import TaskSeparator from "./TaskSeparator"
 
 const Tasks = () => {
   const [tasks, setTasks] = useState(TASKS)
-
   const morningTasks = tasks.filter((task) => task.time === "morning")
   const afternoonTasks = tasks.filter((task) => task.time === "afternoon")
   const nightTasks = tasks.filter((task) => task.time === "night")
@@ -25,12 +25,15 @@ const Tasks = () => {
         return { ...task, status: task.status }
       }
       if (task.status === "not_started") {
+        toast.success("Tarefa iniciada")
         return { ...task, status: "in_progress" }
       }
       if (task.status === "in_progress") {
+        toast.success("Tarefa concluída com sucesso")
         return { ...task, status: "done" }
       }
       if (task.status === "done") {
+        toast.success("Tarefa reiniciada")
         return { ...task, status: "not_started" }
       }
       return task
@@ -41,6 +44,7 @@ const Tasks = () => {
   const handleTaskDelete = (taskId) => {
     const newTasks = tasks.filter((task) => task.id !== taskId)
     setTasks(newTasks)
+    toast.success("Tarefa deletada com sucesso")
   }
 
   return (
