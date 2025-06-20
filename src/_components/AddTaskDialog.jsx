@@ -1,15 +1,30 @@
 import "./AddTaskDialog.css"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { CSSTransition } from "react-transition-group"
+import { v4 as uuidv4 } from "uuid"
 
 import Button from "./Button"
 import Input from "./Input"
 import TimeSelect from "./TimeSelect"
 
-const AddTaskDialog = ({ isOpen, handleClose }) => {
+const AddTaskDialog = ({ isOpen, handleClose, handleSubmit }) => {
+  const [title, setTitle] = useState()
+  const [description, setDescription] = useState()
+  const [time, setTime] = useState()
   const nodeRef = useRef()
+
+  const handleSaveClick = () => {
+    handleSubmit({
+      id: uuidv4(),
+      title: title || "Tarefa sem título",
+      description: description || "Tarefa sem descrição",
+      time,
+      status: "not_started",
+    })
+    handleClose()
+  }
 
   return (
     <CSSTransition
@@ -38,14 +53,21 @@ const AddTaskDialog = ({ isOpen, handleClose }) => {
                   id="title"
                   label="Título"
                   placeholder="Título da tarefa"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
                 />
 
-                <TimeSelect />
+                <TimeSelect
+                  value={time}
+                  onChange={(event) => setTime(event.target.value)}
+                />
 
                 <Input
                   id="description"
                   label="Descrição"
                   placeholder="Descrição da tarefa"
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
                 />
                 <div className="flex gap-3">
                   <Button
@@ -56,7 +78,11 @@ const AddTaskDialog = ({ isOpen, handleClose }) => {
                   >
                     Cancelar
                   </Button>
-                  <Button size="md" className="w-full">
+                  <Button
+                    size="md"
+                    className="w-full"
+                    onClick={handleSaveClick}
+                  >
                     Adicionar
                   </Button>
                 </div>
