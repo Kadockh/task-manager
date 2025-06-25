@@ -1,46 +1,67 @@
 {
-    "tasks": [
-      {
-        "id": 1,
-        "title": "Estudar React",
-        "description": "Estudar para a prova de React",
-        "time": "morning",
-        "status": "done"
-      },
-      {
-        "id": 2,
-        "title": "Estudar residência",
-        "description": "Estudar para a prova de residência",
-        "time": "morning",
-        "status": "done"
-      },
-      {
-        "id": 3,
-        "title": "Treinar",
-        "description": "Treinar para a competição de BJJ",
-        "time": "afternoon",
-        "status": "in_progress"
-      },
-      {
-        "id": 4,
-        "title": "Fazer compras",
-        "description": "Comprar os ingredientes para o jantar de hoje",
-        "time": "afternoon",
-        "status": "in_progress"
-      },
-      {
-        "id": 5,
-        "title": "Descansar",
-        "description": "Assistir um filme com a família",
-        "time": "night",
-        "status": "not_started"
-      },
-      {
-        "id": 6,
-        "title": "Meditar",
-        "description": "Meditar por 10 minutos",
-        "time": "night",
-        "status": "not_started"
-      }
-    ]
-  }
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Estudar React",
+      "description": "Estudar para a prova de React",
+      "time": "morning",
+      "status": "done"
+    },
+    {
+      "id": 2,
+      "title": "Estudar residência",
+      "description": "Estudar para a prova de residência",
+      "time": "morning",
+      "status": "done"
+    },
+    {
+      "id": 3,
+      "title": "Treinar",
+      "description": "Treinar para a competição de BJJ",
+      "time": "afternoon",
+      "status": "in_progress"
+    },
+    {
+      "id": 4,
+      "title": "Fazer compras",
+      "description": "Comprar os ingredientes para o jantar de hoje",
+      "time": "afternoon",
+      "status": "in_progress"
+    },
+    {
+      "id": 5,
+      "title": "Descansar",
+      "description": "Assistir um filme com a família",
+      "time": "night",
+      "status": "not_started"
+    },
+    {
+      "id": 6,
+      "title": "Meditar",
+      "description": "Meditar por 10 minutos",
+      "time": "night",
+      "status": "not_started"
+    },
+    {
+      "id": "42eccefd-3054-4156-aaf8-12eda1a41f6d",
+      "title": "teste",
+      "description": "teste",
+      "time": "afternoon",
+      "status": "not_started"
+    },
+    {
+      "id": "1b392cc6-9c8b-4165-8c4b-7242b0a93149",
+      "title": "sad",
+      "description": "dsa",
+      "time": "morning",
+      "status": "not_started"
+    },
+    {
+      "id": "0bb5f5e0-b825-4add-b66e-ca566302db99",
+      "title": "TAS",
+      "description": "TAS",
+      "time": "morning",
+      "status": "not_started"
+    }
+  ]
+}
