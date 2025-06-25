@@ -54,10 +54,18 @@ const Tasks = () => {
     setTasks(newTasks)
   }
 
-  const handleTaskDelete = (taskId) => {
+  const handleTaskDelete = async (taskId) => {
+    const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+      method: "DELETE",
+    })
+    if (!response.ok) {
+      return toast.error(
+        "Erro ao deletar a tarefa. Por favor, tente novamente."
+      )
+    }
     const newTasks = tasks.filter((task) => task.id !== taskId)
     setTasks(newTasks)
-    toast.success("Tarefa deletada com sucesso")
+    toast.success("Tarefa deletada com sucesso!")
   }
 
   const handleAddTaskSubmit = async (task) => {
@@ -66,10 +74,12 @@ const Tasks = () => {
       body: JSON.stringify(task),
     })
     if (!response.ok) {
-      return toast.error("Erro ao adicionar tarefa")
+      return toast.error(
+        "Erro ao adicionar a tarefa. Por favor, tente novamente."
+      )
     }
     setTasks([...tasks, task])
-    toast.success("Tarefa adicionada com sucesso")
+    toast.success("Tarefa adicionada com sucesso!")
   }
 
   return (
