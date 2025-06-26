@@ -1,45 +1,48 @@
 {
   "tasks": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Estudar React",
       "description": "Estudar para a prova de React",
       "time": "morning",
       "status": "done"
     },
     {
-      "id": 2,
-      "title": "Estudar residência",
-      "description": "Estudar para a prova de residência",
-      "time": "morning",
-      "status": "done"
-    },
-    {
-      "id": 3,
+      "id": "3",
       "title": "Treinar",
       "description": "Treinar para a competição de BJJ",
       "time": "afternoon",
       "status": "in_progress"
     },
     {
-      "id": 4,
+      "id": "4",
       "title": "Fazer compras",
       "description": "Comprar os ingredientes para o jantar de hoje",
       "time": "afternoon",
       "status": "in_progress"
     },
     {
-      "id": 5,
+      "id": "5",
       "title": "Descansar",
       "description": "Assistir um filme com a família",
       "time": "night",
       "status": "not_started"
     },
     {
-      "id": 6,
+      "id": "6",
       "title": "Meditar",
       "description": "Meditar por 10 minutos",
       "time": "night",
+      "status": "not_started"
+    },
+    {
+      "id": "ac8f"
+    },
+    {
+      "id": "aeef3c00-4742-4a8c-9e05-df0af8caf2c3",
+      "title": "teste",
+      "description": "teste",
+      "time": "morning",
       "status": "not_started"
     }
   ]

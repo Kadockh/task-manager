@@ -1,5 +1,4 @@
 import PropTypes from "prop-types"
-
 import { tv } from "tailwind-variants"
 
 const SidebarButton = ({ children, color }) => {

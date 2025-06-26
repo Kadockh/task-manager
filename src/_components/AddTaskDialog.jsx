@@ -4,21 +4,26 @@ import PropTypes from "prop-types"
 import { useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { CSSTransition } from "react-transition-group"
+import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
 
+import { LoaderIcon } from "../assets/icons"
 import Button from "./Button"
 import Input from "./Input"
 import TimeSelect from "./TimeSelect"
 
-const AddTaskDialog = ({ isOpen, handleClose, handleSubmit }) => {
+const AddTaskDialog = ({ isOpen, handleClose, onSubmitSuccess }) => {
   const [errors, setErrors] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
   const titleRef = useRef()
   const descriptionRef = useRef()
   const timeRef = useRef()
   const nodeRef = useRef()
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
+    setIsLoading(true)
+
     const newError = []
 
     const title = titleRef.current.value
@@ -46,14 +51,27 @@ const AddTaskDialog = ({ isOpen, handleClose, handleSubmit }) => {
       return
     }
 
-    handleSubmit({
+    const task = {
       id: uuidv4(),
-      title: title || "Tarefa sem título",
-      description: description || "Tarefa sem descrição",
+      title,
+      description,
       time,
       status: "not_started",
+    }
+
+    const response = await fetch(`http://localhost:3000/tasks`, {
+      method: "POST",
+      body: JSON.stringify(task),
     })
+    if (!response.ok) {
+      setIsLoading(false)
+      return toast.error(
+        "Erro ao adicionar a tarefa. Por favor, tente novamente."
+      )
+    }
+    onSubmitSuccess(task)
     handleClose()
+    setIsLoading(false)
   }
 
   const titleError = errors.find((error) => error.inputName === "title")
@@ -115,7 +133,9 @@ const AddTaskDialog = ({ isOpen, handleClose, handleSubmit }) => {
                     size="md"
                     className="w-full"
                     onClick={handleSaveClick}
+                    disabled={isLoading}
                   >
+                    {isLoading && <LoaderIcon className="animate-spin" />}
                     Adicionar
                   </Button>
                 </div>
@@ -132,7 +152,7 @@ const AddTaskDialog = ({ isOpen, handleClose, handleSubmit }) => {
 AddTaskDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
+  onSubmitSuccess: PropTypes.func.isRequired,
 }
 
 export default AddTaskDialog
