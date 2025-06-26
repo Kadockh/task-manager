@@ -109,6 +109,7 @@ const AddTaskDialog = ({ isOpen, handleClose, onSubmitSuccess }) => {
                   placeholder="Título da tarefa"
                   ref={titleRef}
                   errorMessage={titleError?.message}
+                  disabled={isLoading}
                 />
 
                 <TimeSelect ref={timeRef} errorMessage={timeError?.message} />
@@ -119,6 +120,7 @@ const AddTaskDialog = ({ isOpen, handleClose, onSubmitSuccess }) => {
                   placeholder="Descrição da tarefa"
                   ref={descriptionRef}
                   errorMessage={descriptionError?.message}
+                  disabled={isLoading}
                 />
                 <div className="flex gap-3">
                   <Button
@@ -126,6 +128,7 @@ const AddTaskDialog = ({ isOpen, handleClose, onSubmitSuccess }) => {
                     className="w-full"
                     color="secondary"
                     onClick={handleClose}
+                    disabled={isLoading}
                   >
                     Cancelar
                   </Button>
