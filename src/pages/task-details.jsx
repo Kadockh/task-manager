@@ -111,7 +111,7 @@ const TaskDetailsPage = () => {
     fetchTask()
   }, [taskId])
   return (
-    <div className="flex">
+    <div className="flex h-screen w-full">
       <Sidebar />
       <div className="w-full space-y-6 px-8 py-16">
         <div className="flex w-full justify-between">

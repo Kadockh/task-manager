@@ -4,7 +4,7 @@ import Tasks from "./_components/Tasks"
 
 function App() {
   return (
-    <div className="flex">
+    <div className="flex h-full w-full">
       <Sidebar />
       <Tasks />
     </div>
