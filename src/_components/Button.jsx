@@ -15,6 +15,7 @@ const Button = ({
         primary: "bg-brand-primary text-white",
         ghost: "bg-transparent text-brand-dark-gray",
         secondary: "bg-brand-light-gray text-brand-dark-gray",
+        danger: "bg-brand-danger text-brand-white",
       },
       size: {
         sm: "py-1 text-xs",
@@ -31,7 +32,10 @@ const Button = ({
   })
 
   return (
-    <button className={button({ color, size, className, disabled: rest.disabled })} {...rest}>
+    <button
+      className={button({ color, size, className, disabled: rest.disabled })}
+      {...rest}
+    >
       {children}
     </button>
   )
@@ -39,7 +43,7 @@ const Button = ({
 
 Button.propTypes = {
   children: PropTypes.node.isRequired,
-  color: PropTypes.oneOf(["primary", "ghost", "secondary"]),
+  color: PropTypes.oneOf(["primary", "ghost", "secondary", "danger"]),
   size: PropTypes.oneOf(["sm", "md"]),
   className: PropTypes.string,
 }
