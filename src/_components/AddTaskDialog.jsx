@@ -1,148 +1,149 @@
 import "./AddTaskDialog.css"
 
 import PropTypes from "prop-types"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import { createPortal } from "react-dom"
+import { useForm } from "react-hook-form"
 import { CSSTransition } from "react-transition-group"
-import { toast } from "sonner"
-import { v4 as uuidv4 } from "uuid"
+import { v4 } from "uuid"
 
 import { LoaderIcon } from "../assets/icons"
 import Button from "./Button"
 import Input from "./Input"
 import TimeSelect from "./TimeSelect"
 
-const AddTaskDialog = ({ isOpen, handleClose, onSubmitSuccess }) => {
-  const [errors, setErrors] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+const AddTaskDialog = ({
+  isOpen,
+  handleClose,
+  onSubmitSuccess,
+  onSubmitError,
+}) => {
+  const {
+    register,
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    reset,
+  } = useForm({
+    defaultValues: {
+      title: "",
+      time: "morning",
+      description: "",
+    },
+  })
 
-  const titleRef = useRef()
-  const descriptionRef = useRef()
-  const timeRef = useRef()
   const nodeRef = useRef()
 
-  const handleSaveClick = async () => {
-    setIsLoading(true)
-
-    const newError = []
-
-    const title = titleRef.current.value
-    const description = descriptionRef.current.value
-    const time = timeRef.current.value
-
-    if (!title.trim()) {
-      newError.push({ inputName: "title", message: "Título é obrigatório" })
-    }
-
-    if (!description.trim()) {
-      newError.push({
-        inputName: "description",
-        message: "Descrição é obrigatório",
-      })
-    }
-
-    if (!time.trim()) {
-      newError.push({ inputName: "time", message: "Horário é obrigatório" })
-    }
-
-    setErrors(newError)
-
-    if (newError.length > 0) {
-      return
-    }
-
+  const handleSaveClick = async (data) => {
     const task = {
-      id: uuidv4(),
-      title,
-      description,
-      time,
+      id: v4(),
+      title: data.title.trim(),
+      time: data.time,
+      description: data.description.trim(),
       status: "not_started",
     }
-
-    const response = await fetch(`http://localhost:3000/tasks`, {
+    const response = await fetch("http://localhost:3000/tasks", {
       method: "POST",
       body: JSON.stringify(task),
     })
     if (!response.ok) {
-      setIsLoading(false)
-      return toast.error(
-        "Erro ao adicionar a tarefa. Por favor, tente novamente."
-      )
+      return onSubmitError()
     }
     onSubmitSuccess(task)
     handleClose()
-    setIsLoading(false)
+    reset({
+      title: "",
+      time: "morning",
+      description: "",
+    })
   }
-
-  const titleError = errors.find((error) => error.inputName === "title")
-  const timeError = errors.find((error) => error.inputName === "time")
-  const descriptionError = errors.find(
-    (error) => error.inputName === "description"
-  )
 
   return (
     <CSSTransition
+      nodeRef={nodeRef}
       in={isOpen}
       timeout={500}
       classNames="add-task-dialog"
-      nodeRef={nodeRef}
       unmountOnExit
     >
       <div>
         {createPortal(
           <div
             ref={nodeRef}
-            className="itens-center fixed bottom-0 left-0 top-0 flex h-screen w-screen items-center justify-center bg-black/50 backdrop-blur-sm"
+            className="fixed bottom-0 left-0 top-0 flex h-screen w-screen items-center justify-center backdrop-blur"
           >
-            <div className="rounded-xl bg-white p-5 text-center shadow-lg">
+            <div className="rounded-xl bg-white p-5 text-center shadow">
               <h2 className="text-xl font-semibold text-brand-dark-blue">
                 Nova Tarefa
               </h2>
               <p className="mb-4 mt-1 text-sm text-brand-text-gray">
-                Insira as informações da tarefa
+                Insira as informações abaixo
               </p>
 
-              <div className="flex w-[336px] flex-col space-y-4">
+              <form
+                onSubmit={handleSubmit(handleSaveClick)}
+                className="flex w-[336px] flex-col space-y-4"
+              >
                 <Input
                   id="title"
                   label="Título"
-                  placeholder="Título da tarefa"
-                  ref={titleRef}
-                  errorMessage={titleError?.message}
-                  disabled={isLoading}
+                  placeholder="Insira o título da tarefa"
+                  errorMessage={errors?.title?.message}
+                  disabled={isSubmitting}
+                  {...register("title", {
+                    required: "O título é obrigatório.",
+                    validate: (value) => {
+                      if (!value.trim()) {
+                        return "O título não pode ser vazio."
+                      }
+                      return true
+                    },
+                  })}
                 />
 
-                <TimeSelect ref={timeRef} errorMessage={timeError?.message} />
+                <TimeSelect
+                  disabled={isSubmitting}
+                  errorMessage={errors?.time?.message}
+                  {...register("time", { required: true })}
+                />
 
                 <Input
                   id="description"
                   label="Descrição"
-                  placeholder="Descrição da tarefa"
-                  ref={descriptionRef}
-                  errorMessage={descriptionError?.message}
-                  disabled={isLoading}
+                  placeholder="Descreva a tarefa"
+                  errorMessage={errors?.description?.message}
+                  disabled={isSubmitting}
+                  {...register("description", {
+                    required: "A descrição é obrigatória.",
+                    validate: (value) => {
+                      if (!value.trim()) {
+                        return "A descrição não pode ser vazia."
+                      }
+                      return true
+                    },
+                  })}
                 />
+
                 <div className="flex gap-3">
                   <Button
-                    size="md"
+                    size="large"
                     className="w-full"
                     color="secondary"
                     onClick={handleClose}
-                    disabled={isLoading}
+                    type="button"
                   >
                     Cancelar
                   </Button>
                   <Button
-                    size="md"
+                    size="large"
                     className="w-full"
-                    onClick={handleSaveClick}
-                    disabled={isLoading}
+                    disabled={isSubmitting}
+                    type="submit"
                   >
-                    {isLoading && <LoaderIcon className="animate-spin" />}
-                    Adicionar
+                    {isSubmitting && <LoaderIcon className="animate-spin" />}
+                    Salvar
                   </Button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>,
           document.body
@@ -155,7 +156,7 @@ const AddTaskDialog = ({ isOpen, handleClose, onSubmitSuccess }) => {
 AddTaskDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
-  onSubmitSuccess: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
 }
 
 export default AddTaskDialog
