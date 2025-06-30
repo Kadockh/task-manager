@@ -1,13 +1,6 @@
 {
   "tasks": [
     {
-      "id": "1",
-      "title": "Estudar React",
-      "description": "Estudar para a prova de React",
-      "time": "morning",
-      "status": "done"
-    },
-    {
       "id": "3",
       "title": "Treinar",
       "description": "Treinar para a competição de BJJ",
@@ -39,9 +32,9 @@
       "id": "ac8f"
     },
     {
-      "id": "aeef3c00-4742-4a8c-9e05-df0af8caf2c3",
-      "title": "teste",
-      "description": "teste",
+      "id": "b52fa437-3ed9-492f-8a7d-1cada2426242",
+      "title": "Estudar React",
+      "description": "Estudar",
       "time": "morning",
       "status": "not_started"
     }
