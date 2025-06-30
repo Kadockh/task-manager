@@ -1,20 +1,6 @@
 {
   "tasks": [
     {
-      "id": "3",
-      "title": "Treinar",
-      "description": "Treinar para a competição de BJJ",
-      "time": "afternoon",
-      "status": "in_progress"
-    },
-    {
-      "id": "4",
-      "title": "Fazer compras",
-      "description": "Comprar os ingredientes para o jantar de hoje",
-      "time": "afternoon",
-      "status": "in_progress"
-    },
-    {
       "id": "5",
       "title": "Descansar",
       "description": "Assistir um filme com a família",
@@ -32,10 +18,10 @@
       "id": "ac8f"
     },
     {
-      "id": "b52fa437-3ed9-492f-8a7d-1cada2426242",
-      "title": "Estudar React",
-      "description": "Estudar",
-      "time": "morning",
+      "id": "de8df1ad-0118-4226-bf08-fc970b397cb4",
+      "title": "teste2",
+      "description": "teste",
+      "time": "afternoon",
       "status": "not_started"
     }
   ]
