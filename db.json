@@ -4,13 +4,6 @@
       "id": "ac8f"
     },
     {
-      "id": "391c4339-e384-42b2-9749-7ae02a7b524f",
-      "title": "teste",
-      "description": "teste",
-      "time": "morning",
-      "status": "not_started"
-    },
-    {
       "id": "cc49d981-574a-47f0-a72d-928555886ee3",
       "title": "teste2",
       "description": "teste2",
@@ -22,6 +15,13 @@
       "title": "teste3",
       "description": "teste3",
       "time": "night",
+      "status": "not_started"
+    },
+    {
+      "id": "026580be-8b4a-42ca-9fdb-d3c0e1e7a27d",
+      "title": "teste",
+      "description": "teste",
+      "time": "morning",
       "status": "not_started"
     }
   ]

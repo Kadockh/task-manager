@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
 
@@ -14,91 +15,15 @@ import {
 } from "../assets/icons"
 
 const TaskDetailsPage = () => {
-  const [saveIsLoading, setSaveIsLoading] = useState(false)
-
-  const titleRef = useRef()
-  const descriptionRef = useRef()
-  const timeRef = useRef()
-
-  const [errors, setErrors] = useState([])
-
-  const handleSaveClick = async () => {
-    setSaveIsLoading(true)
-
-    const newError = []
-    const title = titleRef.current.value
-    const description = descriptionRef.current.value
-    const time = timeRef.current.value
-
-    if (!title.trim()) {
-      newError.push({ inputName: "title", message: "Título é obrigatório" })
-    }
-
-    if (!description.trim()) {
-      newError.push({
-        inputName: "description",
-        message: "Descrição é obrigatório",
-      })
-    }
-
-    if (!time.trim()) {
-      newError.push({ inputName: "time", message: "Horário é obrigatório" })
-    }
-
-    setErrors(newError)
-
-    if (newError.length > 0) {
-      return setSaveIsLoading(false)
-    }
-
-    const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        title,
-        description,
-        time,
-      }),
-    })
-    if (!response.ok) {
-      setSaveIsLoading(false)
-      return toast.error("Erro ao editar a tarefa. Por favor, tente novamente.")
-    }
-    const newTask = await response.json()
-    setTask(newTask)
-    toast.success("Tarefa editada com sucesso!")
-    setSaveIsLoading(false)
-  }
-
-  const titleError = errors.find((error) => error.inputName === "title")
-  const timeError = errors.find((error) => error.inputName === "time")
-  const descriptionError = errors.find(
-    (error) => error.inputName === "description"
-  )
-
-  const handleBackClick = () => {
-    navigate(-1)
-  }
-
-  const [deleteIsLoading, setDeleteIsLoading] = useState(false)
-  
-  const handleDeleteTaskClick = async () => {
-    setDeleteIsLoading(true)
-    const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-      method: "DELETE",
-    })
-    if (!response.ok) {
-      return toast.error(
-        "Erro ao deletar a tarefa. Por favor, tente novamente."
-      )
-    }
-    toast.success("Tarefa deletada com sucesso!")
-    setDeleteIsLoading(false)
-    navigate(-1)
-  }
-  const params = useParams()
-  const taskId = params.taskId
+  const { taskId } = useParams()
   const [task, setTask] = useState()
   const navigate = useNavigate()
+  const {
+    register,
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    reset,
+  } = useForm()
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -107,9 +32,40 @@ const TaskDetailsPage = () => {
       })
       const data = await response.json()
       setTask(data)
+      reset(data)
     }
+
     fetchTask()
-  }, [taskId])
+  }, [taskId, reset])
+
+  const handleSaveClick = async (data) => {
+    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        title: data.title.trim(),
+        description: data.description.trim(),
+        time: data.time,
+      }),
+    })
+    if (!response.ok) {
+      return toast.error("Ocorreu um erro ao salvar a tarefa.")
+    }
+    const newTask = await response.json()
+    setTask(newTask)
+    toast.success("Tarefa salva com sucesso!")
+  }
+
+  const handleDeleteClick = async () => {
+    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
+      method: "DELETE",
+    })
+    if (!response.ok) {
+      return toast.error("Ocorreu um erro ao deletar a tarefa.")
+    }
+    toast.success("Tarefa deletada com sucesso!")
+    navigate(-1)
+  }
+
   return (
     <div className="flex h-screen w-full">
       <Sidebar />
@@ -117,7 +73,7 @@ const TaskDetailsPage = () => {
         <div className="flex w-full justify-between">
           <div>
             <button
-              onClick={handleBackClick}
+              onClick={() => navigate(-1)}
               className="mb-3 flex h-8 w-8 items-center justify-center rounded-full bg-brand-primary"
             >
               <ArrowLeftIcon />
@@ -138,64 +94,80 @@ const TaskDetailsPage = () => {
           <Button
             className="h-fit self-end"
             color="danger"
-            onClick={handleDeleteTaskClick}
-            disabled={deleteIsLoading}
+            onClick={handleDeleteClick}
           >
-            {deleteIsLoading ? (
-              <LoaderIcon className="amniate-spin h-4 w-4" />
-            ) : (
-              <TrashIcon />
-            )}
+            <TrashIcon />
             Deletar tarefa
           </Button>
         </div>
 
-        <div className="space-y-6 rounded-xl bg-brand-white p-6">
-          <div>
-            <Input
-              id="title"
-              label="Título"
-              defaultValue={task?.title}
-              errorMessage={titleError?.message}
-              ref={titleRef}
-            />
+        <form onSubmit={handleSubmit(handleSaveClick)}>
+          <div className="space-y-6 rounded-xl bg-brand-white p-6">
+            <div>
+              <Input
+                id="title"
+                label="Título"
+                {...register("title", {
+                  required: "O título é obrigatório.",
+                  validate: (value) => {
+                    if (!value.trim()) {
+                      return "O título não pode ser vazio."
+                    }
+                    return true
+                  },
+                })}
+                errorMessage={errors?.title?.message}
+              />
+            </div>
+
+            <div>
+              <TimeSelect
+                {...register("time", {
+                  required: "O horário é obrigatório.",
+                })}
+                errorMessage={errors?.time?.message}
+              />
+            </div>
+
+            <div>
+              <Input
+                id="description"
+                label="Descrição"
+                {...register("description", {
+                  required: "A descrição é obrigatória.",
+                  validate: (value) => {
+                    if (!value.trim()) {
+                      return "A descrição não pode ser vazia."
+                    }
+                    return true
+                  },
+                })}
+                errorMessage={errors?.description?.message}
+              />
+            </div>
           </div>
 
-          <div>
-            <TimeSelect
-              defaultValue={task?.time}
-              errorMessage={timeError?.message}
-              ref={timeRef}
-            />
-          </div>
+          <div className="flex w-full justify-end gap-3 pt-6">
+            <Button
+              size="md"
+              color="secondary"
+              onClick={() => navigate(-1)}
+              type="button"
+            >
+              Voltar
+            </Button>
 
-          <div>
-            <Input
-              id="description"
-              label="Descrição"
-              defaultValue={task?.description}
-              errorMessage={descriptionError?.message}
-              ref={descriptionRef}
-            />
+            <Button
+              size="md"
+              color="primary"
+              disabled={isSubmitting}
+              type="submit"
+            >
+              {isSubmitting && <LoaderIcon className="animate-spin" />}
+              Salvar
+            </Button>
           </div>
-        </div>
-        <div className="flex w-full justify-end gap-3">
-          <Button size="large" color="secondary" onClick={handleBackClick}>
-            Voltar
-          </Button>
-          <Button
-            size="large"
-            color="primary"
-            onClick={handleSaveClick}
-            disabled={saveIsLoading}
-          >
-            {saveIsLoading ? (
-              <LoaderIcon className="h-4 w-4 animate-spin" />
-            ) : (
-              "Salvar"
-            )}
-          </Button>
-        </div>
+        </form>
       </div>
     </div>
   )
