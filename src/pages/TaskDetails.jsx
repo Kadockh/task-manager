@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
@@ -13,10 +13,19 @@ import {
   LoaderIcon,
   TrashIcon,
 } from "../assets/icons"
+import { useDeleteTask } from "../hooks/data/use-delete-task"
+import { useGetTask } from "../hooks/data/use-get-task"
+import { useUpdateTask } from "../hooks/data/use-update-task"
 
 const TaskDetailsPage = () => {
+  const [isDeleting, setIsDeleting] = useState(false)
   const { taskId } = useParams()
-  const [task, setTask] = useState()
+  const { mutateAsync: updateTask } = useUpdateTask(taskId)
+  const { mutateAsync: deleteTask } = useDeleteTask(taskId)
+  const { data: task } = useGetTask({
+    taskId,
+    onSuccess: (task) => reset(task),
+  })
   const navigate = useNavigate()
   const {
     register,
@@ -25,55 +34,42 @@ const TaskDetailsPage = () => {
     reset,
   } = useForm()
 
-  useEffect(() => {
-    const fetchTask = async () => {
-      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-        method: "GET",
-      })
-      const data = await response.json()
-      setTask(data)
-      reset(data)
-    }
-
-    fetchTask()
-  }, [taskId, reset])
-
-  const handleSaveClick = async (data) => {
-    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        title: data.title.trim(),
-        description: data.description.trim(),
-        time: data.time,
-      }),
-    })
-    if (!response.ok) {
-      return toast.error("Ocorreu um erro ao salvar a tarefa.")
-    }
-    const newTask = await response.json()
-    setTask(newTask)
-    toast.success("Tarefa salva com sucesso!")
-  }
-
-  const handleDeleteClick = async () => {
-    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
-      method: "DELETE",
-    })
-    if (!response.ok) {
-      return toast.error("Ocorreu um erro ao deletar a tarefa.")
-    }
-    toast.success("Tarefa deletada com sucesso!")
+  const handleBackClick = () => {
     navigate(-1)
   }
 
+  const handleSaveClick = async (data) => {
+    await updateTask(data, {
+      onSuccess: () => {
+        toast.success("Tarefa salva com sucesso!")
+      },
+      onError: () => {
+        toast.error("Ocorreu um erro ao salvar a tarefa.")
+      },
+    })
+  }
+
+  const handleDeleteClick = async () => {
+    try {
+      setIsDeleting(true)
+      await deleteTask()
+      toast.success("Tarefa deletada com sucesso!")
+      navigate(-1)
+    } catch (error) {
+      toast.error("Ocorreu um erro ao deletar a tarefa.")
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex">
       <Sidebar />
       <div className="w-full space-y-6 px-8 py-16">
         <div className="flex w-full justify-between">
           <div>
             <button
-              onClick={() => navigate(-1)}
+              onClick={handleBackClick}
               className="mb-3 flex h-8 w-8 items-center justify-center rounded-full bg-brand-primary"
             >
               <ArrowLeftIcon />
@@ -95,8 +91,13 @@ const TaskDetailsPage = () => {
             className="h-fit self-end"
             color="danger"
             onClick={handleDeleteClick}
+            disabled={isDeleting}
           >
-            <TrashIcon />
+            {isDeleting ? (
+              <LoaderIcon className="animate-spin text-brand-white" />
+            ) : (
+              <TrashIcon />
+            )}
             Deletar tarefa
           </Button>
         </div>
@@ -147,24 +148,27 @@ const TaskDetailsPage = () => {
             </div>
           </div>
 
-          <div className="flex w-full justify-end gap-3 pt-6">
+          <div className="flex w-full justify-end gap-3 pt-4">
             <Button
               size="md"
+              className="w-fit"
               color="secondary"
-              onClick={() => navigate(-1)}
+              onClick={handleBackClick}
               type="button"
             >
               Voltar
             </Button>
-
             <Button
               size="md"
               color="primary"
               disabled={isSubmitting}
               type="submit"
             >
-              {isSubmitting && <LoaderIcon className="animate-spin" />}
-              Salvar
+              {isSubmitting ? (
+                <LoaderIcon className="animate-spin text-brand-white" />
+              ) : (
+                "Salvar"
+              )}
             </Button>
           </div>
         </form>

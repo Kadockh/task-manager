@@ -1,15 +1,17 @@
 import "./index.css"
 
-import { StrictMode } from "react"
-import { createRoot } from "react-dom/client"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import React from "react"
+import ReactDOM from "react-dom/client"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import { Toaster } from "sonner"
 
 import App from "./App.jsx"
-import TaskDetailsPage from "./pages/task-details.jsx"
+import TaskDetailsPage from "./pages/TaskDetails.jsx"
 
+const queryClient = new QueryClient()
 
-let router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
@@ -18,12 +20,11 @@ let router = createBrowserRouter([
     path: "/task/:taskId",
     element: <TaskDetailsPage />,
   },
-]);
+])
 
-
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <div className="flex">
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
       <Toaster
         toastOptions={{
           style: {
@@ -32,7 +33,6 @@ createRoot(document.getElementById("root")).render(
         }}
       />
       <RouterProvider router={router} />
-    </div>
-  </StrictMode>
+    </QueryClientProvider>
+  </React.StrictMode>
 )
-

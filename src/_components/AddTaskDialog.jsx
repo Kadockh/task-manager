@@ -5,19 +5,17 @@ import { useRef } from "react"
 import { createPortal } from "react-dom"
 import { useForm } from "react-hook-form"
 import { CSSTransition } from "react-transition-group"
+import { toast } from "sonner"
 import { v4 } from "uuid"
 
 import { LoaderIcon } from "../assets/icons"
+import { useAddTask } from "../hooks/data/use-add-task"
 import Button from "./Button"
 import Input from "./Input"
 import TimeSelect from "./TimeSelect"
 
-const AddTaskDialog = ({
-  isOpen,
-  handleClose,
-  onSubmitSuccess,
-  onSubmitError,
-}) => {
+const AddTaskDialog = ({ isOpen, handleClose }) => {
+  const { mutateAsync: addTask } = useAddTask()
   const {
     register,
     formState: { errors, isSubmitting },
@@ -30,31 +28,41 @@ const AddTaskDialog = ({
       description: "",
     },
   })
-
   const nodeRef = useRef()
 
   const handleSaveClick = async (data) => {
-    const task = {
-      id: v4(),
-      title: data.title.trim(),
-      time: data.time,
-      description: data.description.trim(),
-      status: "not_started",
-    }
-    const response = await fetch("http://localhost:3000/tasks", {
-      method: "POST",
-      body: JSON.stringify(task),
-    })
-    if (!response.ok) {
-      return onSubmitError()
-    }
-    onSubmitSuccess(task)
-    handleClose()
+    await addTask(
+      {
+        id: v4(),
+        title: data.title.trim(),
+        time: data.time,
+        description: data.description.trim(),
+        status: "not_started",
+      },
+      {
+        onSuccess: () => {
+          handleClose()
+          reset({
+            title: "",
+            time: "morning",
+            description: "",
+          })
+          toast.success("Tarefa adicionada com sucesso!")
+        },
+        onError: () => {
+          toast.error("Erro ao adicionar tarefa. Por favor, tente novamente.")
+        },
+      }
+    )
+  }
+
+  const handleCancelClick = () => {
     reset({
       title: "",
       time: "morning",
       description: "",
     })
+    handleClose()
   }
 
   return (
@@ -125,22 +133,25 @@ const AddTaskDialog = ({
 
                 <div className="flex gap-3">
                   <Button
-                    size="large"
+                    size="md"
                     className="w-full"
                     color="secondary"
-                    onClick={handleClose}
+                    onClick={handleCancelClick}
                     type="button"
                   >
                     Cancelar
                   </Button>
                   <Button
-                    size="large"
+                    size="md"
                     className="w-full"
                     disabled={isSubmitting}
                     type="submit"
                   >
-                    {isSubmitting && <LoaderIcon className="animate-spin" />}
-                    Salvar
+                    {isSubmitting ? (
+                      <LoaderIcon className="animate-spin text-brand-white" />
+                    ) : (
+                      "Salvar"
+                    )}
                   </Button>
                 </div>
               </form>
