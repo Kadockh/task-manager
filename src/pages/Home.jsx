@@ -12,12 +12,10 @@ import { useGetTasks } from "../hooks/data/use-get-tasks"
 const HomePage = () => {
   const { data: tasks } = useGetTasks()
 
-  const completedTasks = tasks?.filter((task) => task.status === "done").length
   const inProgressTasks = tasks?.filter(
     (task) => task.status === "in_progress"
   ).length
-  const waterDrunk = 0
-
+  const completedTasks = tasks?.filter((task) => task.status === "done").length
   return (
     <div className="flex">
       <Sidebar />
@@ -41,7 +39,7 @@ const HomePage = () => {
           />
           <DashboardCard
             icon={<GlassWaterIcon />}
-            mainText={waterDrunk}
+            mainText="5"
             subText="Água"
           />
         </div>
@@ -49,5 +47,4 @@ const HomePage = () => {
     </div>
   )
 }
-
 export default HomePage
