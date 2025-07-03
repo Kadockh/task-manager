@@ -4,9 +4,12 @@ import { useState } from "react"
 import { AddIcon, TrashIcon } from "../assets/icons"
 import AddTaskDialog from "./AddTaskDialog"
 import Button from "./Button"
+import ConfirmDeleteDialog from "./ConfirmDeleteDialog"
 
 function Header({ subtitle, title }) {
   const [addTaskDialogIsOpen, setAddTaskDialogIsOpen] = useState(false)
+  const [confirmDeleteDialogIsOpen, setConfirmDeleteDialogIsOpen] =
+    useState(false)
 
   return (
     <div className="flex w-full justify-between">
@@ -18,7 +21,10 @@ function Header({ subtitle, title }) {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button color="ghost">
+        <Button
+          color="ghost"
+          onClick={() => setConfirmDeleteDialogIsOpen(true)}
+        >
           Limpar tarefas
           <TrashIcon />
         </Button>
@@ -31,6 +37,11 @@ function Header({ subtitle, title }) {
         <AddTaskDialog
           isOpen={addTaskDialogIsOpen}
           handleClose={() => setAddTaskDialogIsOpen(false)}
+        />
+
+        <ConfirmDeleteDialog
+          isOpen={confirmDeleteDialogIsOpen}
+          handleClose={() => setConfirmDeleteDialogIsOpen(false)}
         />
       </div>
     </div>
